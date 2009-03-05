@@ -217,7 +217,7 @@ L<http://search.cpan.org/dist/Lingua-EN-Scansion>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 Jeremy G. KAHN, all rights reserved.
+Copyright 2009 Jeremy G. KAHN .
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,0 +1,11 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+lib/Lingua/EN/Scansion.pm
+lib/Lingua/EN/Scansion/Line.pm
+lib/Lingua/EN/Scansion/Syllable.pm
+lib/Lingua/EN/Scansion/Word.pm
+t/00-load.t
+t/pod-coverage.t
+t/pod.t
