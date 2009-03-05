@@ -105,6 +105,7 @@ sub syllabify {
   my $word = $args{word};
 
   $word =~ s/\p{isPunctuation}+$//;
+  $word =~ s/^\p{isPunctuation}+//;
 
   return () if $word =~ /^\s*$/;
 
