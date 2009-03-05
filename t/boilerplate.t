@@ -36,19 +36,21 @@ sub module_boilerplate_ok {
     );
 }
 
+
+not_in_file_ok(README =>
+	       "The README is used..."       => qr/The README is used/,
+	       "'version information here'"  => qr/to provide version information/,
+	      );
+
+not_in_file_ok(Changes =>
+	       "placeholder date/time"       => qr(Date/time)
+	      );
+
+  module_boilerplate_ok('lib/Lingua/EN/Scansion.pm');
+
 TODO: {
   local $TODO = "Need to replace the boilerplate text";
 
-  not_in_file_ok(README =>
-    "The README is used..."       => qr/The README is used/,
-    "'version information here'"  => qr/to provide version information/,
-  );
-
-  not_in_file_ok(Changes =>
-    "placeholder date/time"       => qr(Date/time)
-  );
-
-  module_boilerplate_ok('lib/Lingua/EN/Scansion.pm');
   module_boilerplate_ok('lib/Lingua/EN/Scansion/Word.pm');
   module_boilerplate_ok('lib/Lingua/EN/Scansion/Syllable.pm');
   module_boilerplate_ok('lib/Lingua/EN/Scansion/Line.pm');
