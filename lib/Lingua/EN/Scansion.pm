@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use Carp;
 
+use 5.006;  # seems safe to require at least 5.6.
+
 =head1 NAME
 
 Lingua::EN::Scansion - English language poetry scansion analysis
