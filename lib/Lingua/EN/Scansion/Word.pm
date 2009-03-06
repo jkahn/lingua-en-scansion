@@ -2,6 +2,7 @@ package Lingua::EN::Scansion::Word;
 
 use warnings;
 use strict;
+use Carp;
 
 =head1 NAME
 
@@ -18,34 +19,70 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+A datastructure helper class for C<Lingua::EN::Scansion>.
 
-Perhaps a little code snippet.
+TO DO: a sample use?
 
-    use Lingua::EN::Scansion::Word;
+=head1 CLASS METHODS
 
-    my $foo = Lingua::EN::Scansion::Word->new();
-    ...
+=over
 
-=head1 EXPORT
+=item new
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 FUNCTIONS
-
-=head2 function1
+given a single English word, constructs a self (with syllable
+substructure by asking C<Lingua::EN::Scansion::Syllable> for help)
 
 =cut
 
-sub function1 {
+
+sub new {
+  my $class = shift;
+  my $word = shift;
+
+  my @sylls =
+    Lingua::EN::Scansion::Syllable->syllabify(word => $word);
+  return bless { sylls => \@sylls,
+		 word => $word }, $class;
 }
 
-=head2 function2
+=back
+
+=head1 INSTANCE METHODS
+
+=over
+
+=item word
+
+returns original word (string) form
 
 =cut
 
-sub function2 {
+sub word {
+  my $self = shift;
+  return $self->{word};
+}
+
+=item sylls
+
+returns C<Lingua::EN::Syllable> objects associated with this word
+
+=cut
+
+sub sylls {
+  my $self = shift;
+  return @{$self->{sylls}};
+}
+
+=item debug
+
+returns string form representing serialization of word and substructure
+
+=cut
+
+sub debug {
+  my $self = shift;
+  # TO DO: fix this up to use Syllable structure properly?
+  return join "~", $self->sylls();
 }
 
 =head1 AUTHOR
@@ -54,9 +91,12 @@ Jeremy G. KAHN, C<< <kahn at cpan.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-lingua-en-scansion-word at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Lingua-EN-Scansion>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to
+C<bug-lingua-en-scansion-word at rt.cpan.org>, or through the web
+interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Lingua-EN-Scansion>.
+I will be notified, and then you'll automatically be notified of
+progress on your bug as I make changes.
 
 
 

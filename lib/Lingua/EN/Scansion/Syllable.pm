@@ -2,6 +2,7 @@ package Lingua::EN::Scansion::Syllable;
 
 use warnings;
 use strict;
+use Carp;
 
 =head1 NAME
 
@@ -18,35 +19,118 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+Datastructure helper class for C<Lingua::EN::Scansion>.
 
-Perhaps a little code snippet.
-
-    use Lingua::EN::Scansion::Syllable;
-
-    my $foo = Lingua::EN::Scansion::Syllable->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 FUNCTIONS
-
-=head2 function1
+TO DO: document some of its uses.
 
 =cut
 
-sub function1 {
-}
+# CLASS initialization: build and keep around one of each of these
 
-=head2 function2
+use Lingua::EN::Phoneme;
+my $LEP = Lingua::EN::Phoneme->new();
+
+use Text::Hyphen;
+my $HYPHENATOR = Text::Hyphen->new();
+
+our $VERBOSE;
+
+=head1 CLASS METHODS
+
+=over
+
+=item new
+
+initialize a new syllable object.  Takes k/v pairs as arguments, including
+
+=over
+
+=item spelled
+
+the syllable's chunk for hyphenation
+
+=item vowel
+
+the vowel from this syllable, as retrieved from C<Lingua::EN::Phoneme>.
+
+=back
 
 =cut
 
-sub function2 {
+sub new {
+  my $class = shift;
+  my %args = @_;
+  return bless \%args, $class;
 }
+
+
+=item syllabify
+
+given a word (as string), returns syllable objects that pronounce that word.
+
+Ideally, the syllable objects that it constructs will have spelling
+and pronunciation keys, depending on what the various dictionary and
+hyphenation tools can provide.
+
+=cut
+
+sub syllabify {
+  my $class = shift;
+  my %args = @_;
+
+  my $word = $args{word};
+
+  $word =~ s/\p{isPunctuation}+$//;
+  $word =~ s/^\p{isPunctuation}+//;
+
+  return () if $word =~ /^\s*$/;
+
+  my @spelled_sylls = split /-/, $HYPHENATOR->hyphenate($word);
+
+  my $phonemes = $LEP->phoneme($word);
+  my @phonemes;
+  if (defined $phonemes) {
+    @phonemes = split " ", $phonemes;
+  }
+  my @vowels = grep {/[012]$/} @phonemes;
+
+  if (not @phonemes) {
+    warn "no phonemes for $args{word}\n";
+    return
+      map { $class->new(spelled => $_) }
+	@spelled_sylls;
+  }
+
+  # otherwise we have phonemes
+  if (@vowels != @spelled_sylls and $VERBOSE) {
+    warn "mismatch between #vowels (" . scalar @vowels .
+      ") and #spelled_sylls " . join ('~', @spelled_sylls) . " in $word\n";
+  }
+
+  # trust the vowels more.  TO DO: better alignments.
+  my @out;
+  while (@vowels) {
+    my $vowel = shift @vowels;
+    my $spelled = shift @spelled_sylls;
+    if (not defined $spelled) {
+      $spelled = '';
+    }
+    if (@spelled_sylls and not @vowels) {
+      $spelled .= join ('', @spelled_sylls);
+    }
+    push @out, $class->new(spelled => $spelled, vowel => $vowel);
+  }
+  return @out;
+}
+
+
+=back
+
+=head1 INSTANCE METHODS
+
+=over
+
+=back
 
 =head1 AUTHOR
 
@@ -54,9 +138,12 @@ Jeremy G. KAHN, C<< <kahn at cpan.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-lingua-en-scansion-syllable at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Lingua-EN-Scansion>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to
+C<bug-lingua-en-scansion-syllable at rt.cpan.org>, or through the web
+interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Lingua-EN-Scansion>.
+I will be notified, and then you'll automatically be notified of
+progress on your bug as I make changes.
 
 
 

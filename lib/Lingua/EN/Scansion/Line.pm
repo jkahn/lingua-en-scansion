@@ -2,6 +2,7 @@ package Lingua::EN::Scansion::Line;
 
 use warnings;
 use strict;
+use Carp;
 
 =head1 NAME
 
@@ -18,35 +19,110 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+Datastructure helper class for C<Lingua::EN::Scansion>.
 
-Perhaps a little code snippet.
+TO DO: more documentation of what it's for.
 
-    use Lingua::EN::Scansion::Line;
+=head1 CLASS METHODS
 
-    my $foo = Lingua::EN::Scansion::Line->new();
-    ...
+=over
 
-=head1 EXPORT
+=item new
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 FUNCTIONS
-
-=head2 function1
+k/v pairs as argument. Expects at least C<words> key, which should
+have a listref.
 
 =cut
 
-sub function1 {
+sub new {
+  my $class = shift;
+  my %args = @_;
+  if (not defined $args{words} or ref $args{words} ne 'ARRAY') {
+    carp "$class did not get words key, or words key has a non-listref value";
+  }
+  my $self = bless \%args, $class;
+  return $self;
 }
 
-=head2 function2
+=item new_from_word_stream
+
+takes k/v pairs with keys C<words> (value is ref to wordlist) and
+C<syll_length> (value is number of syllables).
+
+constructs a new C<L:E:S:Line> object from a prefix of the
+word-stream.  The new object will have a syllable length of
+C<syll_length>.
+
+modifies the referred-to array by removing C<syll_length> syllables
+from it.
 
 =cut
 
-sub function2 {
+sub new_from_word_stream {
+  my $class = shift;
+  my %args = @_;
+  my $length = $args{syll_length};
+  my $wordlist = $args{words};
+  my $self = $class->new( words => []);
+  while ($self->syllable_count < $length) {
+    my $next_word = shift @$wordlist;
+    last if not defined $next_word;
+    $self->append_word($next_word);
+  }
+  return $self;
 }
+
+
+=back
+
+=head1 INSTANCE METHODS
+
+=over
+
+=item syllable_count
+
+total number of syllables this line
+
+=cut
+
+sub syllable_count {
+  my $self = shift;
+  my $ct = 0;
+  $ct += $_->sylls() for $self->words();
+  return $ct;
+}
+
+=item words
+
+C<Lingua::EN::Scansion::Word> objects
+
+=cut
+
+sub words {
+  my $self = shift;
+  return @{$self->{words}};
+}
+
+=item append_word
+
+add a C<Lingua::EN::Scansion::Word> object to the end of the line. 
+
+Returns items appended. (I guess? not using this)
+
+=cut
+
+sub append_word {
+  my $self = shift;
+  for my $word (@_) {
+    my $type = ref $word;
+    carp "$type object passed to append word not a L:E:S:Word"
+      unless $word->isa('Lingua::EN::Scansion::Word');
+    push @{$self->{words}}, $word;
+  }
+  return @_;
+}
+
+=back
 
 =head1 AUTHOR
 
