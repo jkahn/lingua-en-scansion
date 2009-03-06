@@ -129,7 +129,11 @@ sub syllabify {
 
   my @spelled_sylls = split /-/, $HYPHENATOR->hyphenate($word);
 
-  my @phonemes = $LEP->phoneme($word);
+  my $phonemes = $LEP->phoneme($word);
+  my @phonemes;
+  if (defined $phonemes) {
+    @phonemes = split " ", $phonemes;
+  }
   my @vowels = grep {/[012]$/} @phonemes;
 
   if (not @phonemes) {
