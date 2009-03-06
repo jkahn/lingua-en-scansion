@@ -85,6 +85,8 @@ sub debug {
   return join "~", $self->sylls();
 }
 
+=back
+
 =head1 AUTHOR
 
 Jeremy G. KAHN, C<< <kahn at cpan.org> >>

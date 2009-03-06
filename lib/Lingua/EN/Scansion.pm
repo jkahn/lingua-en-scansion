@@ -21,6 +21,18 @@ use Lingua::EN::Scansion::Line;
 use Lingua::EN::Scansion::Word;
 use Lingua::EN::Scansion::Syllable;
 
+=head1 CLASS METHODS
+
+=over
+
+=item pretty_print
+
+class method for printing lines.
+
+TO DO: rewrite as instance method?
+
+=cut
+
 sub pretty_print {
   my $class = shift;
   my %args = @_;
@@ -36,6 +48,12 @@ sub pretty_print {
   my $divider = '-' x max (map { length $_ } @formatted);
   return join ("\n", $title, $divider, @formatted);
 }
+
+=item lines_by_syllcts
+
+TO DO: document
+
+=cut
 
 sub lines_by_syllcts {
   my $class = shift;
@@ -62,6 +80,7 @@ sub lines_by_syllcts {
   return @lines;
 }
 
+=back
 
 =head1 AUTHOR
 
