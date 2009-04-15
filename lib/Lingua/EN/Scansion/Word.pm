@@ -73,6 +73,19 @@ sub sylls {
   return @{$self->{sylls}};
 }
 
+
+=item is_sure_syll
+
+=cut
+
+sub is_sure_syll {
+  my $self = shift;
+  for ($self->sylls) {
+    return 0 if not defined $_->{vowel};
+  }
+  return 1;
+}
+
 =item debug
 
 returns string form representing serialization of word and substructure
