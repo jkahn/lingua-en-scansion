@@ -36,6 +36,7 @@ TO DO: rewrite as instance method?
 sub pretty_print {
   my $class = shift;
   my %args = @_;
+  $args{style} = 'text' unless defined $args{style};
   my $title = $args{title};
   my @formatted;
   for my $line (@{$args{lines}}) {
@@ -45,8 +46,20 @@ sub pretty_print {
   }
 
   use List::Util 'max';
-  my $divider = '-' x max (map { length $_ } @formatted);
-  return join ("\n", $title, $divider, @formatted);
+  if ($args{style} eq 'text') {
+    my $divider = '-' x max (map { length $_ } @formatted);
+    return join ("\n", $title, $divider, @formatted);
+  }
+  elsif ($args{style} eq 'inline') {
+    my $body = join " /\n", @formatted;
+    return join "", $title . "\n:::\n" . $body;
+  }
+  elsif ($args{style} eq 'microblog') {
+    return join " /\n", @formatted;
+  }
+  else {
+    croak "unrecognized style => $args{style}";
+  }
 }
 
 =item lines_by_syllcts
